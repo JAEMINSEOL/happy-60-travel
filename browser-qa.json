@@ -1,0 +1,95 @@
+{
+  "overview": {
+    "selected": "ALL",
+    "image": 1536,
+    "cover": true,
+    "tabs": 6,
+    "overflow": false
+  },
+  "expandedMap": true,
+  "days": [
+    {
+      "id": "D0",
+      "selected": "D0",
+      "cards": 2,
+      "images": [],
+      "overflow": false,
+      "map": true,
+      "fallback": false
+    },
+    {
+      "id": "D1",
+      "selected": "D1",
+      "cards": 9,
+      "images": [
+        {
+          "src": "images/german-village.jpg",
+          "width": 1200
+        },
+        {
+          "src": "images/sangju-beach.jpg",
+          "width": 1200
+        },
+        {
+          "src": "images/american-village.jpg",
+          "width": 1200
+        },
+        {
+          "src": "images/anggang-market.jpg",
+          "width": 1200
+        }
+      ],
+      "overflow": false,
+      "map": true,
+      "fallback": false
+    },
+    {
+      "id": "D2",
+      "selected": "D2",
+      "cards": 8,
+      "images": [
+        {
+          "src": "images/yeosu-park.jpg",
+          "width": 1200
+        },
+        {
+          "src": "images/cable-car.jpg",
+          "width": 1200
+        },
+        {
+          "src": "images/pocha.jpg",
+          "width": 1200
+        }
+      ],
+      "overflow": false,
+      "map": true,
+      "fallback": false
+    },
+    {
+      "id": "D3",
+      "selected": "D3",
+      "cards": 5,
+      "images": [
+        {
+          "src": "images/jinnamgwan.jpg",
+          "width": 1200
+        }
+      ],
+      "overflow": false,
+      "map": true,
+      "fallback": false
+    },
+    {
+      "id": "D4",
+      "selected": "D4",
+      "cards": 1,
+      "images": [],
+      "overflow": false,
+      "map": true,
+      "fallback": false
+    }
+  ],
+  "currentBadge": "상주은모래비치",
+  "errors": [],
+  "failedLocal": []
+}

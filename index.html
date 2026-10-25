@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f4c75">
+<title>환갑여행 일정표</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<script>
+/* =====================================================================
+   ✏️ 일정 데이터 — 글자 수정은 여기만 고치면 됩니다.
+   - time  : "HH:MM" (24시간). 현재 시각 기준 '지금/다음' 표시에 사용
+   - icon  : 이모지 아무거나
+   - title : 일정 이름
+   - desc  : 한 줄 설명 (없으면 지워도 됨)
+   - drive : 이 일정까지 차로 이동하는 시간 (없으면 지워도 됨)
+   - map   : 지도 링크 (없으면 지워도 됨)
+   - maps  : 지도 버튼이 여러 개일 때 [{ label, url }, ...]
+   - tag   : "선택" 또는 "미정" 등 (없으면 지워도 됨)
+   - options : 플랜 A/B가 있을 때 [{ label, title, desc, map }, ...]
+   - pos   : 지도 핀 위치 [위도, 경도]. 없으면 지도에 안 나옴 (네이버지도에서 장소 우클릭 → 좌표 복사)
+   - image : 카드 사진 경로 (예: "images/german-village.jpg"). 파일이 없으면 자동으로 숨겨짐
+   - 날짜(day)의 image : '전체' 탭 일정 목록의 날짜별 사진
+   ===================================================================== */
+const TRIP = {
+  title: "환갑여행 일정표",
+  subtitle: "통영 · 남해 · 여수 가을 여행",
+  dateText: "2026. 11. 1 (일) – 11. 5 (목)",
+  notice: "일정과 시간은 현지 사정에 따라 바뀔 수 있어요. 사진은 AI로 만든 참고 이미지입니다.",
+  cover: "images/cover.jpg",   // 표지 배경
+  mainMap: "images/main-map.jpg",   // '전체' 탭 메인 지도 그림 (없으면 실제 지도가 대신 나옴)
+
+  days: [
+    {
+      id: "D0", date: "2026-11-01", weekday: "일", region: "통영", image: "images/day-d0.jpg",
+      summary: "저녁 통영 집결 · 숙박",
+      items: [
+        { time: "18:00", icon: "🤝", title: "통영 집결", pos: [34.8440, 128.4250], desc: "저녁 식사 후 숙소에서 휴식" },
+        { time: "21:00", icon: "🌙", title: "통영 숙박", desc: "내일 아침 9시 통영 출발" },
+      ],
+    },
+    {
+      id: "D1", date: "2026-11-02", weekday: "월", region: "통영 → 남해", image: "images/day-d1.jpg",
+      summary: "독일마을 · 상주은모래비치 · 미국마을",
+      items: [
+        { time: "09:00", icon: "🚗", title: "체크아웃 · 통영 출발", pos: [34.8440, 128.4250], desc: "아침 식사·짐 정리 후 9시 출발 · 삼천포대교 경유" },
+        { time: "10:30", icon: "📍", title: "남해독일마을", pos: [34.7978, 128.0396], image: "images/german-village.jpg", drive: "약 1시간 20분",
+          desc: "바다가 내려다보이는 독일식 주택 마을 산책",
+          map: "https://map.naver.com/p/search/남해독일마을" },
+        { time: "11:30", icon: "🍽️", title: "점심",
+          options: [
+            { label: "A", title: "힙한식", map: "https://naver.me/x9BNru6v" },
+            { label: "B", title: "당케슈니첼", desc: "독일마을 슈니첼", map: "https://naver.me/FcmA8GfL" },
+          ] },
+        { time: "12:30", icon: "☕", title: "카페 할로브리즈", tag: "선택", desc: "커피 한 잔과 바다 뷰 · 시간이 밀리면 생략",
+          map: "https://naver.me/FPn5pmT5" },
+        { time: "13:30", icon: "🏖️", title: "상주은모래비치", pos: [34.7185, 127.9885], image: "images/sangju-beach.jpg", drive: "약 30분",
+          desc: "고운 은빛 모래 해변 산책",
+          map: "https://map.naver.com/p/search/상주은모래비치" },
+        { time: "14:20", icon: "📍", title: "남해 미국마을", pos: [34.7700, 127.9330], image: "images/american-village.jpg", drive: "약 20분",
+          map: "https://map.naver.com/p/search/남해미국마을" },
+        { time: "15:00", icon: "🛍️", title: "앵강마켓 & 남해제과 브레드밀", pos: [34.7470, 127.9180], image: "images/anggang-market.jpg", drive: "약 10분",
+          desc: "두 곳이 붙어 있어요. 특산물 구경하고 빵도 사기",
+          maps: [
+            { label: "앵강마켓", url: "https://map.naver.com/p/search/앵강마켓" },
+            { label: "브레드밀", url: "https://map.naver.com/p/search/남해제과 브레드밀" },
+          ] },
+        { time: "16:30", icon: "🏨", title: "쏠비치 남해 체크인", pos: [34.7035, 128.0253], drive: "약 40–50분",
+          desc: "미조면 설리·송정 쪽 남동 해안 · 체크인 후 휴식",
+          map: "https://map.naver.com/p/search/쏠비치남해" },
+        { time: "19:00", icon: "🍽️", title: "저녁",
+          options: [
+            { label: "A", title: "쏠비치 내 식당", desc: "숙소 안에서 편하게" },
+            { label: "B", title: "초전집", map: "https://naver.me/GtUZbic0" },
+          ] },
+      ],
+    },
+    {
+      id: "D2", date: "2026-11-03", weekday: "화", region: "남해 → 여수", image: "images/day-d2.jpg",
+      summary: "여수해양공원 · 케이블카 · 낭만포차",
+      items: [
+        { time: "09:00", icon: "🥐", title: "호텔 조식", pos: [34.7035, 128.0253], desc: "쏠비치 남해" },
+        { time: "11:00", icon: "🚗", title: "체크아웃 · 여수로 출발", desc: "쏠비치 남해 기본 퇴실 11시 · 노량대교·이순신대교 경유" },
+        { time: "13:00", icon: "🍽️", title: "점심", drive: "약 2시간 (교통에 따라 변동)", tag: "미정",
+          desc: "후보: 복춘식당", map: "https://naver.me/x0UP1ewT" },
+        { time: "14:00", icon: "🌊", title: "여수해양공원", pos: [34.7395, 127.7380], image: "images/yeosu-park.jpg", desc: "바닷가 산책",
+          map: "https://map.naver.com/p/search/여수해양공원" },
+        { time: "15:30", icon: "🚡", title: "여수 해상케이블카", pos: [34.7300, 127.7465], image: "images/cable-car.jpg", desc: "돌산 ↔ 자산공원, 바다 위를 건너요",
+          map: "https://map.naver.com/p/search/여수해상케이블카" },
+        { time: "17:00", icon: "🏨", title: "소노캄 여수 체크인", pos: [34.7480, 127.7535], desc: "저녁 전까지 휴식",
+          map: "https://map.naver.com/p/search/소노캄여수" },
+        { time: "18:30", icon: "🐙", title: "저녁 · 돌문어상회",
+          map: "https://map.naver.com/p/search/여수 돌문어상회" },
+        { time: "20:00", icon: "🏮", title: "여수 낭만포차거리", pos: [34.7410, 127.7405], image: "images/pocha.jpg", desc: "밤바다와 함께 2차",
+          map: "https://map.naver.com/p/search/여수낭만포차거리" },
+      ],
+    },
+    {
+      id: "D3", date: "2026-11-04", weekday: "수", region: "여수 → 통영", image: "images/day-d3.jpg",
+      summary: "11시 체크아웃 · 진남관·이순신광장 · 오동도 · 통영 뒤풀이",
+      items: [
+        { time: "09:00", icon: "☀️", title: "아침 · 여유 있게", pos: [34.7480, 127.7535], desc: "조식 후 숙소에서 쉬며 짐 정리" },
+        { time: "11:00", icon: "🧳", title: "소노캄 여수 체크아웃", desc: "11시 체크아웃 후 진남관·이순신광장으로 이동",
+          map: "https://map.naver.com/p/search/소노캄여수" },
+        { time: "11:30", icon: "🏯", title: "진남관 & 이순신광장", pos: [34.7413, 127.7333], image: "images/jinnamgwan.jpg", drive: "약 10–15분",
+          desc: "진남관과 광장 주변을 여유 있게 둘러보기",
+          map: "https://map.naver.com/p/search/여수 진남관" },
+        { time: "12:30", icon: "🍽️", title: "점심", desc: "이순신광장 주변에서 식사 후 오동도로 이동" },
+        { time: "13:45", icon: "🌿", title: "오동도 산책", pos: [34.7449, 127.7663], drive: "약 10–15분",
+          desc: "방파제 왕복과 섬 산책 약 60–75분 · 걷는 양은 컨디션에 맞추기",
+          map: "https://map.naver.com/p/search/여수 오동도" },
+        { time: "15:00", icon: "🚗", title: "통영으로 출발", desc: "산책을 마친 뒤 출발 · 중간 휴게소에서 쉬어 가도 좋아요" },
+        { time: "17:00", icon: "🛋️", title: "통영 도착 · 휴식", pos: [34.8440, 128.4250], drive: "약 2시간 (휴게소 이용 시 추가)" },
+        { time: "18:30", icon: "🎉", title: "뒤풀이", desc: "여행 마무리 저녁" },
+      ],
+    },
+    {
+      id: "D4", date: "2026-11-05", weekday: "목", region: "통영", image: "images/day-d4.jpg",
+      summary: "해산",
+      items: [
+        { time: "10:00", icon: "👋", title: "해산", pos: [34.8440, 128.4250], desc: "조심히 들어가세요!" },
+      ],
+    },
+  ],
+
+  // '전체' 지도에 크게 표시할 지역 이름
+  cities: [
+    { name: "통영", pos: [34.8440, 128.4250] },
+    { name: "남해", pos: [34.8000, 127.9500] },
+    { name: "여수", pos: [34.7480, 127.7535] },
+  ],
+
+  hotels: [
+    { night: "11/2 (월)", name: "쏠비치 남해", map: "https://map.naver.com/p/search/쏠비치남해" },
+    { night: "11/3 (화)", name: "소노캄 여수", map: "https://map.naver.com/p/search/소노캄여수" },
+  ],
+
+  tips: [
+    "🌡️ 11월 초 남해안은 아침저녁 10°C 안팎, 낮 18°C 안팎이에요.",
+    "🧥 바닷바람이 차요. 얇은 겉옷이나 바람막이를 챙기세요.",
+    "👟 걷는 일정이 많아요. 편한 신발이 좋아요.",
+    "🔋 사진 많이 찍게 보조배터리도 챙기세요.",
+  ],
+};
+</script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --sea: #0f4c75;
+    --sea-deep: #0a3352;
+    --mint: #2fa596;
+    --tang: #e9782a;
+    --sky: #4f74c9;
+    --paper: #faf7f1;
+    --card: #ffffff;
+    --ink: #1d2730;
+    --muted: #66717c;
+    --line: #e7e1d6;
+    --soft: #f1ece2;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    font-size: 17px;
+    line-height: 1.5;
+    word-break: keep-all;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 560px; margin: 0 auto; }
+
+  /* ---------- 표지 ---------- */
+  .cover {
+    position: relative; overflow: hidden; color: #fff;
+    background: linear-gradient(160deg, var(--sea) 0%, var(--sea-deep) 100%);
+    padding: calc(36px + env(safe-area-inset-top)) 20px 60px;
+  }
+  .cover.has-img {
+    background:
+      linear-gradient(180deg, rgba(10,51,82,.35) 0%, rgba(10,51,82,.8) 100%),
+      var(--cover-img) center / cover no-repeat,
+      var(--sea-deep);
+  }
+  .cover .wrap { position: relative; z-index: 1; }
+  .seal {
+    display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: .08em;
+    color: var(--tang); background: #fff3e8; border-radius: 999px; padding: 4px 12px;
+  }
+  .cover h1 { margin: 14px 0 6px; font-size: 34px; line-height: 1.2; font-weight: 800; letter-spacing: -.02em; }
+  .cover .sub { margin: 0; font-size: 17px; opacity: .9; }
+  .cover .date { margin: 12px 0 0; font-size: 15px; opacity: .8; }
+  .cover h1, .cover .sub, .cover .date { text-shadow: 0 1px 8px rgba(0,0,0,.25); }
+  .status {
+    margin-top: 18px; display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25);
+    border-radius: 12px; padding: 8px 14px; font-size: 15px; font-weight: 600;
+  }
+  .status .dot { width: 8px; height: 8px; border-radius: 50%; background: #7ee0c9; box-shadow: 0 0 0 4px rgba(126,224,201,.25); }
+  .waves { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 48px; display: block; }
+
+  /* ---------- 탭 ---------- */
+  .tabs-bar {
+    position: sticky; top: 0; z-index: 1000;
+    background: rgba(250,247,241,.95);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+    padding: 10px 12px;
+  }
+  .tabs { display: grid; grid-template-columns: 1.15fr repeat(5, 1fr); gap: 5px; }
+  .tab {
+    appearance: none; border: 1px solid var(--line); background: var(--card);
+    border-radius: 12px; padding: 7px 0 6px; font: inherit; color: var(--ink); cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2;
+    position: relative; min-width: 0;
+  }
+  .tab .d { font-size: 15px; font-weight: 800; }
+  .tab .dt { font-size: 11px; color: var(--muted); margin-top: 2px; white-space: nowrap; }
+  .tab[aria-selected="true"] { background: var(--sea); border-color: var(--sea); color: #fff; }
+  .tab[aria-selected="true"] .dt { color: rgba(255,255,255,.8); }
+  .tab .today {
+    position: absolute; top: -7px; right: -3px; font-size: 10px; font-weight: 700; color: #fff;
+    background: var(--tang); border-radius: 999px; padding: 1px 6px;
+  }
+
+  /* ---------- 공통 ---------- */
+  .section { padding: 20px 16px 4px; }
+  .section h2 { margin: 0 0 12px; font-size: 20px; font-weight: 800; letter-spacing: -.01em; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; }
+
+  /* ---------- 지도 ---------- */
+  .map-box { padding: 16px 16px 0; }
+  .map {
+    height: 300px; border-radius: 18px; overflow: hidden;
+    border: 1px solid var(--line); background: #e8eef0; z-index: 0;
+  }
+  .map.small { height: 260px; }
+  .main-map { display: block; width: 100%; border-radius: 18px; border: 1px solid var(--line); background: var(--soft); }
+  .real-map { margin-top: 10px; }
+  .real-map summary {
+    cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 12px; border-radius: 10px; background: #eef6f4; color: #1d7466; font-size: 14px; font-weight: 700;
+  }
+  .real-map summary::-webkit-details-marker { display: none; }
+  .real-map[open] summary { margin-bottom: 10px; }
+  .map-note { margin: 8px 4px 0; font-size: 13px; color: var(--muted); }
+  .map-fail { display: grid; place-items: center; height: 100%; color: var(--muted); font-size: 14px; text-align: center; padding: 16px; }
+  .pin-icon {
+    width: 28px; height: 28px; border-radius: 50%; color: #fff;
+    display: grid; place-items: center; font: 800 14px/1 "Pretendard", sans-serif;
+    border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.3);
+  }
+  .city-label {
+    background: var(--ink); color: #fff; border: 0; border-radius: 8px;
+    font: 800 14px/1 "Pretendard", sans-serif; padding: 6px 9px; box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  .city-label::before { display: none; }
+  .leaflet-popup-content { font-family: "Pretendard", sans-serif; font-size: 14px; margin: 10px 14px; }
+
+  /* ---------- 전체 일정 ---------- */
+  .day-block { overflow: hidden; margin-bottom: 12px; }
+  .day-block-head {
+    display: flex; align-items: center; gap: 12px; padding: 12px;
+    width: 100%; appearance: none; border: 0; background: transparent; font: inherit; color: inherit;
+    text-align: left; cursor: pointer;
+  }
+  .day-thumb { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; flex: 0 0 auto; background: var(--soft); }
+  .day-chip {
+    width: 60px; height: 60px; border-radius: 12px; flex: 0 0 auto;
+    display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 18px;
+  }
+  .day-block-head .k { font-size: 13px; font-weight: 700; }
+  .day-block-head .r { font-size: 18px; font-weight: 800; line-height: 1.3; }
+  .day-block-head .more { margin-left: auto; font-size: 14px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+  .mini { list-style: none; margin: 0; padding: 0 14px 10px; }
+  .mini li { display: flex; gap: 12px; padding: 7px 0; border-top: 1px dashed var(--line); font-size: 15px; }
+  .mini .t { flex: 0 0 44px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .mini .alt { color: var(--muted); }
+
+  /* ---------- 데이 화면 ---------- */
+  .day-head { padding: 18px 16px 0; }
+  .day-head .kicker { font-size: 14px; font-weight: 700; color: var(--accent, var(--sea)); }
+  .day-head h3 { margin: 2px 0 0; font-size: 24px; font-weight: 800; letter-spacing: -.01em; }
+
+  .timeline { list-style: none; margin: 0; padding: 12px 16px 8px; }
+  .drive {
+    display: flex; align-items: center; gap: 8px;
+    margin: 0 0 0 26px; padding: 8px 0 8px 22px;
+    border-left: 2px dashed #c9c1b2; font-size: 14px; color: var(--muted);
+  }
+  .gap { margin-left: 26px; height: 12px; border-left: 2px solid var(--line); }
+  .item {
+    display: grid; grid-template-columns: 54px 1fr; gap: 12px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 14px 14px 14px 12px; scroll-margin-top: 90px;
+  }
+  .item.tentative { border-style: dashed; background: #fffdfa; }
+  .item.past { opacity: .55; }
+  .item.now { border: 2px solid var(--tang); box-shadow: 0 6px 20px rgba(233,120,42,.15); }
+  .item.next { border-color: var(--accent, var(--sea)); }
+  .thumb {
+    grid-column: 1 / -1; display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover;
+    border-radius: 12px; background: var(--soft);
+  }
+  .when { text-align: center; }
+  .when .t { font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .when .ic { font-size: 26px; line-height: 1; margin-top: 6px; }
+  .body { min-width: 0; }
+  .title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .title-row h4 { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.35; }
+  .num {
+    width: 22px; height: 22px; border-radius: 50%; color: #fff; background: var(--accent, var(--sea));
+    display: inline-grid; place-items: center; font-size: 12px; font-weight: 800; flex: 0 0 auto;
+  }
+  .badge { font-size: 12px; font-weight: 700; border-radius: 999px; padding: 2px 8px; line-height: 1.4; }
+  .badge.now { background: var(--tang); color: #fff; }
+  .badge.next { background: var(--accent, var(--sea)); color: #fff; }
+  .badge.tag { background: var(--soft); color: var(--muted); }
+  .desc { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+  .map-btn {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 8px 12px;
+    border-radius: 10px; background: #eef6f4; color: #1d7466;
+    font-size: 14px; font-weight: 700; text-decoration: none;
+  }
+  .map-btn:active { transform: scale(.98); }
+  .maps { display: flex; flex-wrap: wrap; gap: 0 8px; }
+  .seg { display: flex; gap: 6px; margin-top: 10px; background: var(--soft); padding: 4px; border-radius: 12px; }
+  .seg button {
+    flex: 1; appearance: none; border: 0; background: transparent;
+    font: inherit; font-size: 14px; font-weight: 700; color: var(--muted);
+    padding: 8px 6px; border-radius: 9px; cursor: pointer; line-height: 1.3;
+  }
+  .seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .opt { margin-top: 4px; }
+
+  /* ---------- 숙소 · 팁 ---------- */
+  .info-card { padding: 4px 16px; }
+  .hotel { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); }
+  .hotel:first-child { border-top: 0; }
+  .hotel .n { font-size: 13px; color: var(--muted); }
+  .hotel .h { font-size: 17px; font-weight: 700; }
+  .hotel .map-btn { margin-top: 0; flex: 0 0 auto; }
+  .tips { list-style: none; margin: 0; padding: 0; }
+  .tips li { padding: 12px 0; border-top: 1px solid var(--line); font-size: 15px; }
+  .tips li:first-child { border-top: 0; }
+
+  footer { padding: 28px 16px calc(36px + env(safe-area-inset-bottom)); text-align: center; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="wrap">
+    <span class="seal">축 환갑</span>
+    <h1 id="title"></h1>
+    <p class="sub" id="subtitle"></p>
+    <p class="date" id="dateText"></p>
+    <div class="status"><span class="dot"></span><span id="statusText"></span></div>
+  </div>
+  <svg class="waves" viewBox="0 0 400 48" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 24 C 60 6, 120 40, 200 22 S 340 6, 400 20 L400 48 L0 48 Z" fill="#faf7f1" opacity=".35"/>
+    <path d="M0 32 C 70 16, 140 46, 220 30 S 350 18, 400 30 L400 48 L0 48 Z" fill="#faf7f1"/>
+  </svg>
+</header>
+
+<nav class="tabs-bar" aria-label="화면 선택">
+  <div class="wrap"><div class="tabs" id="tabs" role="tablist"></div></div>
+</nav>
+
+<main class="wrap" id="view"></main>
+
+<footer id="notice"></footer>
+
+<script>
+(function () {
+  const ACCENT = { D0: "#0f4c75", D1: "#2fa596", D2: "#e9782a", D3: "#4f74c9", D4: "#7a5bb5" };
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  // 현재 한국 시각 (테스트용: 주소 뒤에 ?now=2026-11-02T14:50)
+  const params = new URLSearchParams(location.search);
+  const now = params.get("now") ? new Date(params.get("now") + ":00+09:00") : new Date();
+  const at = (date, time) => new Date(`${date}T${time}:00+09:00`);
+  const today = new Date(now.getTime() + 9 * 3600e3).toISOString().slice(0, 10);
+  const days = TRIP.days;
+  const md = (date) => `${+date.slice(5, 7)}/${+date.slice(8, 10)}`;
+  const dayName = (d) => d.id === "D0" ? "전날 · 집결" : d.id === "D4" ? "마지막 날" : `${d.id.replace("D", "")}일차`;
+
+  // ---------- 표지 ----------
+  $("title").textContent = TRIP.title;
+  $("subtitle").textContent = TRIP.subtitle;
+  $("dateText").textContent = TRIP.dateText;
+  $("notice").textContent = TRIP.notice;
+  document.title = TRIP.title;
+  if (TRIP.cover) {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.querySelector(".cover");
+      c.style.setProperty("--cover-img", `url("${TRIP.cover}")`);
+      c.classList.add("has-img");
+    };
+    img.src = TRIP.cover;
+  }
+  const first = days[0].date, last = days[days.length - 1].date;
+  let status;
+  if (today < first) {
+    const left = Math.round((new Date(first + "T00:00:00Z") - new Date(today + "T00:00:00Z")) / 86400e3);
+    status = `여행까지 D-${left}`;
+  } else if (today > last) {
+    status = "즐거운 여행이었어요 💛";
+  } else {
+    const d = days.find((x) => x.date === today);
+    status = d ? `오늘은 ${d.id === "D0" ? "집결일" : d.id.replace("D", "") + "일차"} · ${d.region}` : "여행 중";
+  }
+  $("statusText").textContent = status;
+
+  // ---------- 지금 / 다음 ----------
+  const flat = [];
+  days.forEach((d) => d.items.forEach((it, i) => flat.push({ d, i, start: at(d.date, it.time) })));
+  let nowKey = null, nextKey = null;
+  flat.forEach((cur, k) => {
+    const nx = flat[k + 1];
+    const end = nx && nx.d.date === cur.d.date ? nx.start : at(cur.d.date, "23:59");
+    if (now >= cur.start && now < end) nowKey = cur.d.id + ":" + cur.i;
+    if (!nextKey && cur.start > now) nextKey = cur.d.id + ":" + cur.i;
+  });
+
+  // 지도 핀 번호 (같은 날 같은 좌표는 하나로)
+  function pinsOf(d) {
+    const pins = [];
+    d.items.forEach((it, i) => {
+      if (!it.pos) return;
+      const prev = pins[pins.length - 1];
+      if (prev && prev.pos[0] === it.pos[0] && prev.pos[1] === it.pos[1]) { prev.idx.push(i); prev.titles.push(it.title); return; }
+      pins.push({ n: pins.length + 1, pos: it.pos, idx: [i], titles: [it.title], time: it.time });
+    });
+    return pins;
+  }
+
+  // ---------- 지도 ----------
+  let map = null;
+  function makeMap(el) {
+    if (map) { map.remove(); map = null; }
+    if (!window.L) { el.innerHTML = `<div class="map-fail">지도를 불러오지 못했어요.<br>인터넷 연결을 확인해 주세요.</div>`; return null; }
+    map = L.map(el, { scrollWheelZoom: false, dragging: !L.Browser.mobile, tap: false, zoomSnap: 0.25 });
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 18, attribution: "© OpenStreetMap",
+    }).addTo(map);
+    return map;
+  }
+  const pinIcon = (n, color) => L.divIcon({
+    className: "", iconSize: [28, 28], iconAnchor: [14, 14],
+    html: `<div class="pin-icon" style="background:${color}">${n}</div>`,
+  });
+
+  function drawDayMap(el, d) {
+    const m = makeMap(el); if (!m) return;
+    const pins = pinsOf(d), color = ACCENT[d.id];
+    if (!pins.length) { m.setView([34.8, 128.0], 9); return; }
+    if (pins.length > 1) L.polyline(pins.map((p) => p.pos), { color, weight: 3, opacity: .8, dashArray: "6 8" }).addTo(m);
+    pins.forEach((p) => {
+      L.marker(p.pos, { icon: pinIcon(p.n, color) }).addTo(m)
+        .bindPopup(`<b>${p.n}. ${esc(p.titles.join(" / "))}</b><br>${esc(p.time)}`);
+    });
+    if (pins.length === 1) m.setView(pins[0].pos, 13);
+    else m.fitBounds(L.latLngBounds(pins.map((p) => p.pos)), { padding: [30, 30] });
+  }
+
+  function drawOverviewMap(el) {
+    const m = makeMap(el); if (!m) return;
+    const all = [];
+    days.forEach((d) => {
+      const pts = pinsOf(d).map((p) => p.pos);
+      all.push(...pts);
+      if (pts.length > 1) L.polyline(pts, { color: ACCENT[d.id], weight: 4, opacity: .85 }).addTo(m);
+      pts.forEach((pt) => L.circleMarker(pt, { radius: 5, color: "#fff", weight: 2, fillColor: ACCENT[d.id], fillOpacity: 1 }).addTo(m));
+    });
+    (TRIP.cities || []).forEach((c) => {
+      L.marker(c.pos, { opacity: 0, interactive: false }).addTo(m)
+        .bindTooltip(c.name, { permanent: true, direction: "top", offset: [0, -6], className: "city-label" });
+    });
+    m.fitBounds(L.latLngBounds(all), { padding: [36, 36] });
+  }
+
+  // ---------- 화면: 전체 ----------
+  const choice = {};
+  const mapBtn = (url, label) => url ? `<a class="map-btn" href="${esc(url)}" target="_blank" rel="noopener">📍 ${esc(label || "지도 보기")}</a>` : "";
+
+  function renderOverview() {
+    const legend = days.filter((d) => pinsOf(d).length > 1)
+      .map((d) => `<span style="color:${ACCENT[d.id]};font-weight:800">━</span> ${dayName(d)}`).join(" &nbsp; ") + " · 선은 순서만 표시";
+    const blocks = days.map((d) => `
+      <div class="card day-block">
+        <button class="day-block-head" data-go="${d.id}">
+          <div class="day-chip" style="background:${ACCENT[d.id]}">${d.id}</div>
+          ${d.image ? `<img class="day-thumb" src="${esc(d.image)}" alt="" onload="this.previousElementSibling.remove()" onerror="this.remove()">` : ""}
+          <div><div class="k" style="color:${ACCENT[d.id]}">${dayName(d)} · ${md(d.date)} (${d.weekday})</div><div class="r">${esc(d.region)}</div></div>
+          <span class="more">자세히 ›</span>
+        </button>
+        <ul class="mini">
+          ${d.items.map((it) => `<li><span class="t">${esc(it.time)}</span><span>${esc(it.title)}${
+            it.options ? ` <span class="alt">(${it.options.map((o) => esc(o.title)).join(" / ")})</span>` : ""}${
+            it.tag ? ` <span class="alt">· ${esc(it.tag)}</span>` : ""}</span></li>`).join("")}
+        </ul>
+      </div>`).join("");
+
+    $("view").innerHTML = `
+      <section class="section">
+        <h2>전체 동선</h2>
+        <div id="mapArea"></div>
+      </section>
+      <section class="section"><h2>전체 일정</h2>${blocks}</section>
+      <section class="section"><h2>숙소</h2><div class="card info-card">${TRIP.hotels.map((h) => `
+        <div class="hotel"><div><div class="n">${esc(h.night)} 숙박</div><div class="h">${esc(h.name)}</div></div>${mapBtn(h.map, "지도")}</div>`).join("")}</div></section>
+      <section class="section"><h2>여행 팁</h2><div class="card info-card"><ul class="tips">${TRIP.tips.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div></section>`;
+    const realMap = `<div id="map" class="map"></div><p class="map-note">${legend}</p>`;
+    const area = $("mapArea");
+    const img = new Image();
+    img.onload = () => {
+      area.innerHTML = `
+        <a href="${esc(TRIP.mainMap)}" target="_blank" rel="noopener"><img class="main-map" src="${esc(TRIP.mainMap)}" alt="전체 여행 동선 지도"></a>
+        <p class="map-note">그림을 누르면 크게 볼 수 있어요.</p>
+        <details class="real-map"><summary>🗺️ 실제 지도로 보기</summary>${realMap}</details>`;
+      area.querySelector("details").addEventListener("toggle", (e) => {
+        if (e.target.open && !map) drawOverviewMap($("map"));
+      }, { once: false });
+    };
+    img.onerror = () => { area.innerHTML = realMap; drawOverviewMap($("map")); };
+    if (map) { map.remove(); map = null; }
+    if (TRIP.mainMap) img.src = TRIP.mainMap; else img.onerror();
+  }
+
+  // ---------- 화면: 데이 ----------
+  function optionBlock(key, it) {
+    const sel = choice[key] ?? 0, o = it.options[sel];
+    return `
+      <div class="seg" role="group" aria-label="플랜 선택">
+        ${it.options.map((op, n) => `<button type="button" data-key="${key}" data-n="${n}" aria-pressed="${n === sel}">플랜 ${esc(op.label)}<br><span style="font-weight:500">${esc(op.title)}</span></button>`).join("")}
+      </div>
+      <div class="opt">${o.desc ? `<p class="desc">${esc(o.desc)}</p>` : ""}${mapBtn(o.map, o.title + " 지도")}</div>`;
+  }
+
+  function renderDay(id, scroll) {
+    const d = days.find((x) => x.id === id);
+    const numOf = {};
+    pinsOf(d).forEach((p) => { numOf[p.idx[0]] = p.n; });
+
+    const rows = d.items.map((it, i) => {
+      const key = id + ":" + i;
+      const cls = ["item"];
+      if (it.tag) cls.push("tentative");
+      let badge = "";
+      if (key === nowKey) { cls.push("now"); badge = `<span class="badge now">지금</span>`; }
+      else if (key === nextKey) { cls.push("next"); badge = `<span class="badge next">다음</span>`; }
+      else if (at(d.date, it.time) < now) cls.push("past");
+      const connector = i === 0 ? "" : it.drive
+        ? `<li class="drive">🚗 차로 ${esc(it.drive)}</li>` : `<li class="gap" aria-hidden="true"></li>`;
+      const links = it.options ? optionBlock(key, it)
+        : it.maps ? `<div class="maps">${it.maps.map((m) => mapBtn(m.url, m.label + " 지도")).join("")}</div>`
+        : mapBtn(it.map);
+      return `${connector}
+        <li class="${cls.join(" ")}" id="it-${id}-${i}">
+          ${it.image ? `<img class="thumb" src="${esc(it.image)}" alt="${esc(it.title)}" loading="lazy" onerror="this.remove()">` : ""}
+          <div class="when"><div class="t">${esc(it.time)}</div><div class="ic">${it.icon || "📍"}</div></div>
+          <div class="body">
+            <div class="title-row">${numOf[i] ? `<span class="num">${numOf[i]}</span>` : ""}<h4>${esc(it.title)}</h4>${badge}${it.tag ? `<span class="badge tag">${esc(it.tag)}</span>` : ""}</div>
+            ${it.desc ? `<p class="desc">${esc(it.desc)}</p>` : ""}
+            ${links}
+          </div>
+        </li>`;
+    }).join("");
+
+    const v = $("view");
+    v.style.setProperty("--accent", ACCENT[id]);
+    v.innerHTML = `
+      <div class="map-box">
+        <div id="map" class="map small"></div>
+        <p class="map-note">숫자 = 아래 일정 번호 · 점선은 순서만 표시 (실제 도로 아님)</p>
+      </div>
+      <div class="day-head"><div class="kicker">${dayName(d)} · ${+d.date.slice(5, 7)}월 ${+d.date.slice(8, 10)}일 (${d.weekday})</div><h3>${esc(d.region)}</h3></div>
+      <ol class="timeline">${rows}</ol>`;
+    drawDayMap($("map"), d);
+
+    if (scroll && nowKey && nowKey.startsWith(id + ":")) {
+      const t = $("it-" + nowKey.replace(":", "-"));
+      if (t) t.scrollIntoView({ block: "center" });
+    }
+  }
+
+  // ---------- 탭 ----------
+  function show(id, scroll) {
+    document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-selected", t.dataset.id === id));
+    id === "ALL" ? renderOverview() : renderDay(id, scroll);
+  }
+  $("tabs").innerHTML =
+    `<button class="tab" role="tab" data-id="ALL"><span class="d">전체</span><span class="dt">지도·일정</span></button>` +
+    days.map((d) => `<button class="tab" role="tab" data-id="${d.id}">
+      ${d.date === today ? `<span class="today">오늘</span>` : ""}
+      <span class="d">${d.id}</span><span class="dt">${md(d.date)} ${d.weekday}</span></button>`).join("");
+
+  function goTo(id) {
+    show(id);
+    const bar = document.querySelector(".tabs-bar");
+    const top = bar.offsetTop;
+    if (window.scrollY > top) window.scrollTo({ top, behavior: "smooth" });
+  }
+  $("tabs").addEventListener("click", (e) => { const b = e.target.closest(".tab"); if (b) goTo(b.dataset.id); });
+  $("view").addEventListener("click", (e) => {
+    const go = e.target.closest("[data-go]");
+    if (go) { goTo(go.dataset.go); return; }
+    const b = e.target.closest(".seg button");
+    if (!b) return;
+    choice[b.dataset.key] = +b.dataset.n;
+    const y = window.scrollY;
+    renderDay(b.dataset.key.split(":")[0]);
+    window.scrollTo(0, y);
+  });
+
+  // 처음 화면: 여행 중이면 오늘 탭, 아니면 '전체'
+  const todayDay = days.find((d) => d.date === today);
+  show(todayDay ? todayDay.id : "ALL");
+
+  // 10분마다 새로고침해서 '지금' 표시 갱신
+  setInterval(() => { if (!params.has("now")) location.reload(); }, 10 * 60e3);
+})();
+</script>
+</body>
+</html>
