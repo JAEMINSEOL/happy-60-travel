@@ -121,10 +121,17 @@ const TRIP = {
       ],
     },
     {
-      id: "D4", date: "2026-11-05", weekday: "목", region: "통영", image: "images/day-d4.jpg",
-      summary: "해산",
+      id: "D4", date: "2026-11-05", weekday: "목", region: "통영 → 여수", image: "images/day-d4.jpg",
+      summary: "여수 점심 · 식사 후 해산",
       items: [
-        { time: "10:00", icon: "👋", title: "해산", pos: [34.8440, 128.4250], desc: "조심히 들어가세요!" },
+        { time: "10:00", icon: "🚗", title: "통영 출발", pos: [34.8440, 128.4250], desc: "여수에서 점심을 먹고 여행 마무리" },
+        { time: "12:00", icon: "📍", title: "여수 도착", pos: [34.7480, 127.7535], drive: "약 2시간 (교통에 따라 변동)", desc: "선택한 식당으로 이동 · 주차와 대기 시간 여유 두기" },
+        { time: "12:30", icon: "🍽️", title: "여수 점심", tag: "후보", desc: "두 곳 중 선택 · 방문 전 점심 영업 여부 확인",
+          options: [
+            { label: "A", title: "여수칼국수쭈꾸미 학쭈집", map: "https://map.naver.com/p/search/여수칼국수쭈꾸미 학쭈집" },
+            { label: "B", title: "아라쭈꾸미", map: "https://map.naver.com/p/search/여수 아라쭈꾸미" },
+          ] },
+        { time: "13:30", icon: "👋", title: "식사 후 해산", desc: "점심을 마친 뒤 각자 귀가 · 식사와 대기 상황에 따라 조정" },
       ],
     },
   ],
